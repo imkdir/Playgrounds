@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>BaseContentIdentifier</key>
+	<string>com.apple.playgrounds.blank</string>
+	<key>BaseContentVersion</key>
+	<string>1.0</string>
+	<key>ContentType</key>
+	<string>PlaygroundBookUserEdit</string>
+	<key>Diffs</key>
+	<dict>
+		<key>Chapters/Chapter1.playgroundchapter/Pages/8031BAD3-1538-448B-A081-65BDF12404FF.playgroundpage/UserManifest.plist</key>
+		<string>Added</string>
+		<key>Chapters/Chapter1.playgroundchapter/Pages/8031BAD3-1538-448B-A081-65BDF12404FF.playgroundpage/main.swift</key>
+		<string>Modified</string>
+		<key>Chapters/Chapter1.playgroundchapter/Pages/8698B845-4401-44F7-AB42-70417DFBE735.playgroundpage/UserManifest.plist</key>
+		<string>Added</string>
+		<key>Chapters/Chapter1.playgroundchapter/Pages/8698B845-4401-44F7-AB42-70417DFBE735.playgroundpage/main.swift</key>
+		<string>Modified</string>
+		<key>Chapters/Chapter1.playgroundchapter/Pages/F9692920-0863-4656-B9BB-53B9FF35F7DA.playgroundpage/UserManifest.plist</key>
+		<string>Added</string>
+		<key>Chapters/Chapter1.playgroundchapter/Pages/F9692920-0863-4656-B9BB-53B9FF35F7DA.playgroundpage/main.swift</key>
+		<string>Modified</string>
+		<key>Chapters/Chapter1.playgroundchapter/Pages/My Playground.playgroundpage/UserManifest.plist</key>
+		<string>Added</string>
+		<key>Chapters/Chapter1.playgroundchapter/Pages/My Playground.playgroundpage/main.swift</key>
+		<string>Modified</string>
+		<key>Chapters/Chapter1.playgroundchapter/UserManifest.plist</key>
+		<string>Added</string>
+		<key>UserModules/IconKit.playgroundmodule/Sources/IconKit.swift</key>
+		<string>Added</string>
+		<key>UserModules/SwiftDates.playgroundmodule/Sources/Calendar+Dispatch.swift</key>
+		<string>Added</string>
+		<key>UserModules/SwiftDates.playgroundmodule/Sources/Calendar+Utilities.swift</key>
+		<string>Added</string>
+		<key>UserModules/SwiftDates.playgroundmodule/Sources/Date+Formatting.swift</key>
+		<string>Added</string>
+		<key>UserModules/SwiftDates.playgroundmodule/Sources/Date+Math.swift</key>
+		<string>Added</string>
+		<key>UserModules/SwiftDates.playgroundmodule/Sources/Date+Utilities.swift</key>
+		<string>Added</string>
+		<key>UserModules/SwiftDates.playgroundmodule/Sources/DateComponents+Utilities.swift</key>
+		<string>Added</string>
+		<key>UserModules/UserModule.playgroundmodule/Sources/Page.swift</key>
+		<string>Added</string>
+		<key>UserModules/UserModule.playgroundmodule/Sources/SharedCode.swift</key>
+		<string>Modified</string>
+	</dict>
+	<key>FormatVersion</key>
+	<integer>2</integer>
+	<key>UpdatedContentVersion</key>
+	<string>1.0</string>
+</dict>
+</plist>

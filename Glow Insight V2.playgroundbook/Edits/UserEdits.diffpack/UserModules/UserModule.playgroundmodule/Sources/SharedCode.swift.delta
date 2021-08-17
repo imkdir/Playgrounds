@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Diffs</key>
+	<array>
+		<dict>
+			<key>ModifiedContent</key>
+			<string>import UIKit
+import SwiftDates
+
+// MARK: - AUTO LAYOUT UTILS
+
+public extension UIView {
+    
+    func constraint(to size: CGSize) {
+        widthAnchor.constraint(equalToConstant: size.width).isActive = true
+        heightAnchor.constraint(equalToConstant: size.height).isActive = true
+    }
+    
+    func pinEdgesToSuperview() {
+        guard let superview = self.superview else { return }
+        leadingAnchor.constraint(equalTo: superview.leadingAnchor).isActive = true
+        trailingAnchor.constraint(equalTo: superview.trailingAnchor).isActive = true
+        topAnchor.constraint(equalTo: superview.topAnchor).isActive = true
+        bottomAnchor.constraint(equalTo: superview.bottomAnchor).isActive = true
+    }
+    
+    func centerInSuperview(width: CGFloat? = nil, height: CGFloat? = nil) {
+        guard let superview = superview else { return }
+        switch (width, height) {
+        case (nil, let h?):
+            heightAnchor.constraint(equalToConstant: h).isActive = true
+            leadingAnchor.constraint(equalTo: superview.leadingAnchor).isActive = true
+            trailingAnchor.constraint(equalTo: superview.trailingAnchor).isActive = true
+            centerYAnchor.constraint(equalTo: superview.centerYAnchor).isActive = true
+        case (let w?, nil):
+            widthAnchor.constraint(equalToConstant: w).isActive = true
+            topAnchor.constraint(equalTo: superview.topAnchor).isActive = true
+            bottomAnchor.constraint(equalTo: superview.bottomAnchor).isActive = true
+            centerXAnchor.constraint(equalTo: superview.centerXAnchor).isActive = true
+        case (let w?, let h?):
+            heightAnchor.constraint(equalToConstant: h).isActive = true
+            widthAnchor.constraint(equalToConstant: w).isActive = true
+            centerXAnchor.constraint(equalTo: superview.centerXAnchor).isActive = true
+            centerYAnchor.constraint(equalTo: superview.centerYAnchor).isActive = true
+        case (nil, nil):
+            centerXAnchor.constraint(equalTo: superview.centerXAnchor).isActive = true
+            centerYAnchor.constraint(equalTo: superview.centerYAnchor).isActive = true
+        }
+    }
+}
+
+// MARK: - DATE UTILS
+
+public extension Date {
+    
+    var monthDesc: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMM"
+        return formatter.string(from: self).uppercased()
+    }
+    
+    var indexPath: IndexPath {
+        .init(item: weekday-1, section: weekOfMonth-1)
+    }
+    
+    func allDatesInSameMonth() -&gt; [Date] {
+        let start = self.startOfMonth
+        let range = Date.sharedCalendar.range(of: .day, in: .month, for: self)!
+        var results = [start]
+        for i in 1..&lt;range.count {
+            results.append(start + .days(i))
+        }
+        return results
+    }
+}
+
+// MARK: - KEYPATH
+
+public extension NSParagraphStyle {
+    static func mutable() -&gt; NSMutableParagraphStyle {
+        let result = NSMutableParagraphStyle()
+        result.lineBreakMode = .byTruncatingTail
+        return result
+    }
+}
+
+public extension NSMutableParagraphStyle {
+    func with&lt;V&gt;(_ keyPath: ReferenceWritableKeyPath&lt;NSMutableParagraphStyle, V&gt;, _ value: V) -&gt; Self {
+        self[keyPath: keyPath] = value
+        return self
+    }
+}
+
+// MARK: - COLOR UTILS
+
+public extension UIColor {
+    static func random() -&gt; UIColor {
+        let r = CGFloat.random(in: 0 ... 1)
+        let g = CGFloat.random(in: 0 ... 1)
+        let b = CGFloat.random(in: 0 ... 1)
+        return UIColor(red: r, green: g, blue: b, alpha: 1.0)
+    }
+    
+    static func hex(_ value: Int32, alpha: CGFloat = 1) -&gt; UIColor {
+        let r = CGFloat((value &amp; 0xFF0000) &gt;&gt; 16) / 255.0
+        let g = CGFloat((value &amp; 0x00FF00) &gt;&gt; 8) / 255.0
+        let b = CGFloat(value &amp; 0x0000FF) / 255.0
+        return UIColor(red: r, green: g, blue: b, alpha: alpha)
+    }
+}
+
+// MARK: - STRING SIZE
+public extension String {
+    
+    func boundingRect(with size: CGSize, attributes: [NSAttributedString.Key: Any]) -&gt; CGRect {
+        let options: NSStringDrawingOptions = [.usesLineFragmentOrigin, .usesFontLeading]
+        let rect = self.boundingRect(with: size, options: options, attributes: attributes, context: nil)
+        return rect
+    }
+    
+    func size(fits size: CGSize, font: UIFont, maximumNumberOfLines: Int = 0) -&gt; CGSize {
+        let attributes: [NSAttributedString.Key: Any] = [.font: font]
+        var size = self.boundingRect(with: size, attributes: attributes).size
+        if maximumNumberOfLines &gt; 0 {
+            size.height = min(size.height, CGFloat(maximumNumberOfLines) * font.lineHeight)
+        }
+        return size
+    }
+    
+    func width(with font: UIFont, maximumNumberOfLines: Int = 0) -&gt; CGFloat {
+        let size = CGSize(width: CGFloat.greatestFiniteMagnitude, height: CGFloat.greatestFiniteMagnitude)
+        return self.size(fits: size, font: font, maximumNumberOfLines: maximumNumberOfLines).width
+    }
+    
+    func height(fits width: CGFloat, font: UIFont, maximumNumberOfLines: Int = 0) -&gt; CGFloat {
+        let size = CGSize(width: width, height: CGFloat.greatestFiniteMagnitude)
+        return self.size(fits: size, font: font, maximumNumberOfLines: maximumNumberOfLines).height
+    }
+}
+
+// MARK: - CGRECT UTILS
+public extension CGRect {
+    
+    var center: CGPoint {
+        .init(x: midX, y: midY)
+    }
+    
+    init(center: CGPoint, size: CGSize) {
+        self.init(
+            x: center.x - size.width * 0.5,
+            y: center.y - size.height * 0.5,
+            width: size.width,
+            height: size.height)
+    }
+}
+
+// MARK: - ARRAY UTILS
+public extension Array where Element == Double {
+    func average(excludingZeros: Bool = false) -&gt; Double {
+        let cnt = excludingZeros ? self.filter({ $0 != 0 }).count : self.count
+        return self.reduce(0, +) / Double(cnt)
+    } 
+}
+
+public extension Array {
+    init(generating nextElement: @autoclosure () -&gt; Element, count: Int) {
+        var result: [Element] = []
+        for i in 0 ..&lt; count {
+            result.append(nextElement())
+        }
+        self.init(result)
+    }
+}
+
+// MARK: - DEBUG METHODS
+public func drawBorder(in rect: CGRect) {
+    let path = UIBezierPath(roundedRect: rect.insetBy(dx: 0.5, dy: 0.5), cornerRadius: 8)
+    path.lineWidth = 1
+    path.setLineDash([2, 2], count: 2, phase: 0)
+    UIColor.systemGray.setStroke()
+    path.stroke()
+}
+
+// MARK: - ???
+public func drawRandomBlocks(in rect: CGRect) {
+    let path = UIBezierPath(
+        roundedRect: rect.insetBy(dx: 0.5, dy: 0.5), 
+        cornerRadius: 30)
+    path.lineWidth = 1
+    UIColor.black.setStroke()
+    path.stroke()
+    
+    let uw = rect.width * 0.02
+    let uh = uw
+    for i in 0 ... 96 {
+        let y = rect.minY + uh * CGFloat(i)
+        for j in 0 ... 50 {
+            let x = rect.minX + uw * CGFloat(j)
+            let br = CGRect(x: x, y: y, width: uw, height: uh)
+            UIColor.random().setFill()
+            let bp = UIBezierPath(rect: br)
+            bp.fill()
+        }
+    }
+}
+</string>
+			<key>ModifiedRange</key>
+			<string>{0, 7000}</string>
+			<key>OriginalContent</key>
+			<string>// Code inside modules can be shared between pages and other source files.
+</string>
+			<key>OriginalRange</key>
+			<string>{0, 75}</string>
+		</dict>
+	</array>
+	<key>FormatVersion</key>
+	<integer>2</integer>
+</dict>
+</plist>
