@@ -57,7 +57,7 @@ open class DemoViewController: UIViewController {
         super.viewDidLayoutSubviews()
         
         animateButton.frame = CGRect(x: view.bounds.width - 96, y: view.bounds.height - 76, width: 80, height: 60)
-        zoomButton.frame = CGRect(x: 96, y: view.bounds.height - 76, width: 80, height: 60)
+        zoomButton.frame = CGRect(x: 16, y: view.bounds.height - 76, width: 80, height: 60)
     }
     
     private let animateButton = UIButton()
@@ -74,13 +74,15 @@ open class DemoViewController: UIViewController {
     
     @objc
     private func zoomBlock() {
-        UIView.animate(withDuration: 0.2, animations: {
-            self.view.transform = CGAffineTransform.identity.scaledBy(x: 2, y: 2)
-        })
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
+        if self.frameView.transform != .identity {
             UIView.animate(withDuration: 0.2, animations: {
-                self.view.transform = .identity
+                self.frameView.transform = .identity
             })
+            return
+        }
+        let scale = view.bounds.width / frameView.bounds.width
+        UIView.animate(withDuration: 0.2, animations: {
+            self.frameView.transform = CGAffineTransform.identity.scaledBy(x: scale, y: scale)
         })
     }
 }

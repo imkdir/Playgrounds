@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>BaseFile</key>
+	<string>Chapters/Chapter1.playgroundchapter/Pages/Template.playgroundpage/main.swift</string>
+	<key>Diffs</key>
+	<array>
+		<dict>
+			<key>ModifiedContent</key>
+			<string>import UIKit
+import PlaygroundSupport
+
+class BubbleLayout {
+    
+    var data: [SexPositionData] = [] {
+        didSet {
+            calculateFrames()
+        }
+    }
+    
+    var rect: CGRect = .zero {
+        didSet {
+            calculateFrames()
+        }
+    }
+    
+    let contentInsets: UIEdgeInsets
+    
+    init(contentInsets: UIEdgeInsets = .zero) {
+        self.contentInsets = contentInsets
+    }
+    
+    private(set) var frames: [SexPositionData: CGRect] = [:]
+    
+    private func calculateFrames() {
+        guard rect != .zero, !data.isEmpty else {
+            return
+        }
+        let bounds = rect.inset(by: contentInsets)
+        var results = [CGRect](repeating: .zero, count: 4)
+        let items = data.sorted(by: &gt;)
+        let size = normalizedSizes(with: items.map({ $0.cgSize }))
+        
+        // center
+        results[0] = CGRect(center: bounds.center, size: size[0])
+        // top left
+        let radius01 = (size[0].width + size[1].width) * 0.5 + 8
+        let center01 = CGPoint(
+            x: results[0].midX + radius01 * cos(.pi * 1.05),
+            y: results[0].midY + radius01 * sin(.pi * 1.05)
+        )
+        results[1] = CGRect(center: center01, size: size[1])
+        // top right
+        let radius02 = (size[0].width + size[2].width) * 0.5 + 8
+        let center02 = CGPoint(
+            x: results[0].midX + radius02 * cos(0),
+            y: results[0].midY + radius02 * sin(0)
+        )
+        results[2] = CGRect(center: center02, size: size[2])
+        // bottom right
+        let radius03 = (size[0].width + size[3].width) * 0.5 + 8
+        let center03 = CGPoint(
+            x: results[0].midX + radius03 * cos(.pi * 0.3),
+            y: results[0].midY + radius03 * sin(.pi * 0.3)
+        )
+        results[3] = CGRect(center: center03, size: size[3])
+        
+        frames = zip(items, results)
+            .reduce(into: [:]) { $0[$1.0] = $1.1 }
+    }
+    
+    func normalizedSizes(with sizes: [CGSize]) -&gt; [CGSize] {
+        
+        if sizes.isAllEqual() {
+            var results = sizes
+            results[0] = sizes[0]
+            results[1] = sizes[1].scaled(by: 0.85)
+            results[2] = results[1]
+            results[3] = sizes[3].scaled(by: 0.65)
+            return results
+        } else {
+            if sizes[0] == sizes[1] {
+                var results = sizes
+                results[0] = sizes[0].scaled(by: 1.5)
+                return results
+            } else if sizes[2] == sizes[3] {
+                var results = sizes
+                results[2] = sizes[2].scaled(by: 1.5)
+                return results
+            }
+        } 
+        return sizes
+    }
+}
+
+enum SexPosition: Int {
+    case front, bottom, top, secret
+    var icon: UIImage {
+        switch self {
+        case .top: 
+            return #imageLiteral(resourceName: "icon-insights-sex-ontop.png")
+        case .bottom: 
+            return #imageLiteral(resourceName: "icon-insights-sex-bottom.png") 
+        case .front: 
+            return #imageLiteral(resourceName: "icon-insights-sex-front.png")
+        case .secret: 
+            return #imageLiteral(resourceName: "icon-insights-sex-secret.png") 
+        }
+    }
+    var name: String {
+        switch self {
+        case .top:
+            return "on top"
+        case .bottom:
+            return "on bottom"
+        case .front:
+            return "in front"
+        case .secret:
+            return "unknown"
+        }
+    }
+}
+
+struct SexPositionData: Hashable, Equatable, Comparable {
+    let sexPosition: SexPosition
+    let percentage: Double
+    let isHighlighted: Bool
+    
+    var scale: Double {
+        switch percentage {
+        case 0..&lt;0.15: return 0.2
+        case 0.15..&lt;0.5: return 0.4
+        case 0.5...: return 0.6
+        default: return percentage
+        }
+    }
+    
+    var cgSize: CGSize {
+        CGSize(width: 240 * scale, height: 240 * scale)
+    }
+    
+    static func &lt; (lhs: SexPositionData, rhs: SexPositionData) -&gt; Bool {
+        if lhs.scale == rhs.scale {
+            return rhs.isHighlighted
+        } else {
+            return lhs.scale &lt; rhs.scale
+        }
+    }
+}
+
+class BubbleChartDataView: UIView {
+    
+    let layout = BubbleLayout(
+        contentInsets: 
+            UIEdgeInsets(top: 0, left: 0, bottom: 40, right: 0))
+    
+    var data: [SexPositionData] = [] {
+        didSet {
+            layout.data = data
+            setNeedsDisplay()
+        }
+    }
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        backgroundColor = .clear
+    }
+    
+    override func draw(_ rect: CGRect) {
+        
+        guard let context = UIGraphicsGetCurrentContext() else { return }
+        context.setShadow(offset: .zero, blur: 36, color: UIColor.hex(0xAC9EFF).cgColor)
+        var valueAttributes: [NSAttributedString.Key: Any] = [
+            .font: UIFont.systemFont(ofSize: 28, weight: .bold),
+            .foregroundColor: UIColor.white
+        ]
+        for (item, frame) in self.layout.frames
+            .sorted(by: { $0.key &gt; $1.key }) {
+            item.sexPosition.icon.draw(in: frame)
+            context.saveGState()
+            context.setShadow(offset: .zero, blur: 6, color: UIColor.hex(0xA954D4).cgColor)
+            let label = "\(Int(item.percentage * 100))%"
+            let lsize = label.boundingRect(with: frame.size, attributes: valueAttributes)
+            let lrect = CGRect(x: frame.midX - lsize.width * 0.5, y: frame.maxY - lsize.height - 4, width: lsize.width, height: lsize.height)
+            (label as NSString).draw(in: lrect, withAttributes: valueAttributes)
+            context.restoreGState()
+            valueAttributes[.font] = UIFont.systemFont(ofSize: 16, weight: .bold)
+        }
+        for (item, frame) in self.layout.frames where item.isHighlighted {
+            let path = UIBezierPath(ovalIn: frame.insetBy(dx: -4, dy: -4))
+            path.lineWidth = 8
+            UIColor.white.setStroke()
+            path.stroke()
+            
+            context.saveGState()
+            let transform = CGAffineTransform.identity
+                .translatedBy(x: frame.midX, y: frame.maxY + path.lineWidth)
+                .scaledBy(x: 1.2, y: 1.2)
+            context.concatenate(transform)
+            drawUpwardTriangle(in: context, color: UIColor.hex(0x5B62D2))
+            context.restoreGState()
+            
+            context.saveGState()
+            context.setShadow(offset: .zero, blur: 6, color: UIColor.white.cgColor)
+            let label = "Your recently logged\n\(item.sexPosition.name)"
+            let lsize = label.boundingRect(with: bounds.size, attributes: labelAttributes).size
+            let lrect = CGRect(
+                x: max(bounds.minX, frame.midX - lsize.width * 0.5), 
+                y: frame.maxY + 12, 
+                width: lsize.width, 
+                height: lsize.height)
+            (label as NSString).draw(in: lrect, withAttributes: labelAttributes)
+            context.restoreGState()
+        }
+    }
+    
+    private let labelAttributes: [NSAttributedString.Key: Any] = [
+        .font: UIFont.systemFont(ofSize: 12),
+        .foregroundColor: UIColor.hex(0x666666),
+        .paragraphStyle: NSParagraphStyle.mutable().with(\.alignment, .center)
+    ]
+    
+    override func layoutSubviews() {
+        layout.rect = bounds
+        setNeedsDisplay()
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
+class PositionBubbleChartView: UIView {
+    
+    let dataView = BubbleChartDataView()
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        backgroundColor = .clear
+        
+        addSubview(dataView)
+        dataView.translatesAutoresizingMaskIntoConstraints = false
+        dataView.pinEdgesToSuperview()
+    }
+    
+    func debug() {
+        let v1 = Double.random(in: 1...100)
+        let v2 = Double.random(in: 1...100)
+        let v3 = Double.random(in: 1...100)
+        let v4 = Double.random(in: 1...100)
+        let total = v1 + v2 + v3 + v4
+        dataView.data = [
+            .init(sexPosition: .top, percentage: v1/total, isHighlighted: true),
+            .init(sexPosition: .front, percentage: v2/total, isHighlighted: false),
+            .init(sexPosition: .bottom, percentage: v3/total, isHighlighted: false),
+            .init(sexPosition: .secret, percentage: v4/total, isHighlighted: false)
+        ]
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func draw(_ rect: CGRect) {
+        drawBorder(in: rect)
+    }
+}
+
+class ViewController: DemoViewController {
+    
+    let chartView = PositionBubbleChartView()
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        view.backgroundColor = UIColor.hex(0xB9FCFF)
+        frameView.backgroundColor = .white
+        
+        frameView.addSubview(chartView)
+        chartView.translatesAutoresizingMaskIntoConstraints = false
+        chartView.centerInSuperview(height: 240)
+    }
+    
+    override func animateBlock() {
+        chartView.debug()
+    }
+}
+
+let page = ViewController()
+
+PlaygroundPage.current.needsIndefiniteExecution = true
+PlaygroundPage.current.liveView = page
+</string>
+			<key>ModifiedRange</key>
+			<string>{0, 9212}</string>
+			<key>OriginalContent</key>
+			<string>
+</string>
+			<key>OriginalRange</key>
+			<string>{0, 1}</string>
+		</dict>
+	</array>
+	<key>FormatVersion</key>
+	<integer>2</integer>
+</dict>
+</plist>

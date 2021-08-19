@@ -78,6 +78,23 @@ public func femaleBodyPath(in targetFrame: CGRect = CGRect(x: 0, y: 0, width: 73
     return result
 }
 
+public func drawUpwardTriangle(in context: CGContext, color: UIColor) { //w10h6
+    context.beginPath()
+    let bezierPath = UIBezierPath()
+    bezierPath.move(to: CGPoint(x: -3.2, y: 1.9))
+    bezierPath.addCurve(to: CGPoint(x: -3.95, y: 0.24), controlPoint1: CGPoint(x: -4.06, y: 1.9), controlPoint2: CGPoint(x: -4.52, y: 0.89))
+    bezierPath.addLine(to: CGPoint(x: -0.68, y: -3.46))
+    bezierPath.addCurve(to: CGPoint(x: 0.82, y: -3.46), controlPoint1: CGPoint(x: -0.28, y: -3.91), controlPoint2: CGPoint(x: 0.42, y: -3.91))
+    bezierPath.addLine(to: CGPoint(x: 4.09, y: 0.24))
+    bezierPath.addCurve(to: CGPoint(x: 3.34, y: 1.9), controlPoint1: CGPoint(x: 4.66, y: 0.89), controlPoint2: CGPoint(x: 4.2, y: 1.9))
+    bezierPath.addLine(to: CGPoint(x: -3.2, y: 1.9))
+    bezierPath.close()
+    bezierPath.usesEvenOddFillRule = true
+    context.setFillColor(color.cgColor)
+    context.addPath(bezierPath.cgPath)
+    context.fillPath()
+}
+
 public func drawHeart(in context: CGContext) { // w14h12
 
     context.translateBy(x: -7, y: -6)

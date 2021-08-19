@@ -18,12 +18,12 @@ public extension UIView {
         heightAnchor.constraint(equalToConstant: size.height).isActive = true
     }
     
-    func pinEdgesToSuperview() {
+    func pinEdgesToSuperview(edgeInsets: UIEdgeInsets = .zero) {
         guard let superview = self.superview else { return }
-        leadingAnchor.constraint(equalTo: superview.leadingAnchor).isActive = true
-        trailingAnchor.constraint(equalTo: superview.trailingAnchor).isActive = true
-        topAnchor.constraint(equalTo: superview.topAnchor).isActive = true
-        bottomAnchor.constraint(equalTo: superview.bottomAnchor).isActive = true
+        leadingAnchor.constraint(equalTo: superview.leadingAnchor, constant: edgeInsets.left).isActive = true
+        trailingAnchor.constraint(equalTo: superview.trailingAnchor, constant: -edgeInsets.right).isActive = true
+        topAnchor.constraint(equalTo: superview.topAnchor, constant: edgeInsets.top).isActive = true
+        bottomAnchor.constraint(equalTo: superview.bottomAnchor, constant: -edgeInsets.bottom).isActive = true
     }
     
     func centerInSuperview(width: CGFloat? = nil, height: CGFloat? = nil) {
@@ -156,6 +156,19 @@ public extension CGRect {
     }
 }
 
+public extension CGSize {
+    func scaled(by value: CGFloat) -&gt; CGSize {
+        CGSize(width: width * value, height: height * value)
+    }
+}
+
+public extension Array where Element: Equatable {
+    func isAllEqual(to element: Element? = nil) -&gt; Bool {
+        let item = element ?? self.first
+        return self.allSatisfy({ $0 == item })
+    }
+}
+
 // MARK: - ARRAY UTILS
 public extension Array where Element == Double {
     func average(excludingZeros: Bool = false) -&gt; Double {
@@ -207,7 +220,7 @@ public func drawRandomBlocks(in rect: CGRect) {
 }
 </string>
 			<key>ModifiedRange</key>
-			<string>{0, 7000}</string>
+			<string>{0, 7492}</string>
 			<key>OriginalContent</key>
 			<string>// Code inside modules can be shared between pages and other source files.
 </string>
